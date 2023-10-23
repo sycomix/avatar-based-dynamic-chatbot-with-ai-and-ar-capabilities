@@ -31,29 +31,29 @@ def getRestaurants(coordinates):
     listofRestaurantsnearby = []
     information_about_restaurant = []
 
-    getRestaurantsFromLatAndLon = 'https://developers.zomato.com/api/v2.1/search?lat='+str(lat)+'&lon='+str(lon)+ '&radius=500&sort=real_distance&order=asc&start=0&count=20'
+    getRestaurantsFromLatAndLon = f'https://developers.zomato.com/api/v2.1/search?lat={str(lat)}&lon={str(lon)}&radius=500&sort=real_distance&order=asc&start=0&count=20'
     header = {"User-agent": "curl/7.43.0", "Accept": "application/json", "user-key": ""}
     response = requests.get(getRestaurantsFromLatAndLon, headers=header)
     Restaurant_info = response.json()
-   
+
     for k,v in Restaurant_info.items():
         if(k=='restaurants'):
             for i in Restaurant_info[k]:
                 information_about_restaurant= i['restaurant'].keys()
                 listofRestaurantsnearby.append(i['restaurant']['name'])
-    listofRestaurantsnearbyjson = {"nearby": [x for x in listofRestaurantsnearby]}
+    listofRestaurantsnearbyjson = {"nearby": list(listofRestaurantsnearby)}
     return jsonify(listofRestaurantsnearbyjson)
 
 @app.route("/getlocation", methods=["GET"])
 def getlocation():
     lat = request.args['lat']
     lon = request.args['lon']
-    location = str(lat)+","+str(lon)
+    location = f"{str(lat)},{str(lon)}"
     geolocator = Nominatim(user_agent="smart_avatar_application")
     location = geolocator.reverse(location)
     place = location.address
     outputjson = {"place": place.split(',')[0]}
-    
+
     return jsonify(outputjson)
 
 @app.route("/getrestaurants", methods=["GET"])
